@@ -33,7 +33,10 @@ node.elasticsearch[:data][:devices].each do |device, params|
       notifies :restart, 'service[elasticsearch]' unless node.elasticsearch[:skip_restart]
     end
     
-    not_if { `cat /proc/mounts | grep "#{device}"` }
+    not_if { 
+      `mountpoint #{params[:mount_path]}`
+      $?.to_i == 0
+    }
   end
 
   # Ensure proper permissions
